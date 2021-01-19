@@ -1,23 +1,27 @@
 'use strict';
 
-const { removeById } = require('../../repositories/cars-repository');
+const Joi = require('joi');
+const {
+  findAll,
+  removeById
+} = require('../../repositories/cars-repository');
+const createJsonError = require('../errors/create-json-errors');
 
-function deleteCarById(req, res) {
+const schema = Joi.number().positive().required();
+
+async function deleteCarById(req, res) {
   try {
     const { id } = req.params;
-    carsRepository.removeById(parseInt(id));
 
-    const cars = carsRepository.findAll();
+    await schema.validateAsync(id);
 
-    //res.status(204).send(); // No content
+    await removeById(parseInt(id));
+
+    const cars = await findAll();
+
     res.status(200).send(cars);
   } catch(err) {
-    if(err.name === 'ValidationError'){
-      err.status = 400;
-    }
-
-    res.status(err.status || 500);
-    res.send({ error: err.message });
+    createJsonError(err, res);
   }
 }
 

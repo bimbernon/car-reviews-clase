@@ -1,10 +1,15 @@
 'use strict';
 const carsRepository = require('../../repositories/cars-repository');
+const createJsonError = require('../errors/create-json-errors');
 
-function getCars(req, res) {
-  const cars = carsRepository.findAll();
+async function getCars(req, res) {
+  try {
+    const cars = await carsRepository.findAll();
 
-  res.send(cars);
+    res.send(cars);
+  } catch(err) {
+    createJsonError(err, res);
+  }
 }
 
 module.exports = getCars;

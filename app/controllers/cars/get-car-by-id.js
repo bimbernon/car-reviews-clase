@@ -1,25 +1,28 @@
 'use strict';
+
 const Joi = require('joi');
 const { findById } = require('../../repositories/cars-repository');
+const createJsonError = require('../errors/create-json-errors');
 
 const schema = Joi.number().positive().required();
 
-function getCarById(req, res) {
+async function getCarById(req, res) {
   try {
     const { id } = req.params;
-    Joi.assert(id, schema);
-    const car = findById(parseInt(id));
 
-    if (!car) {
-      throw new Error('Id not available');
-      //res.status(400).send('Id not available');
+    //Joi.assert(id, schema);
+    await schema.validateAsync(id);
+    const car = await findById(parseInt(id));
+
+    if ( !car ) {
+      const error = new Error('Id no disponible');
+      error.status = 400;
+      throw error;
     }
 
-    //res.status(200).send(car);
     res.send(car);
   } catch(err) {
-    res.status(400).send({ error: err.message });
-    //res.status(400).send(err);
+    createJsonError(err, res);
   }
 }
 

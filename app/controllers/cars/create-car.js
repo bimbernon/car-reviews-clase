@@ -1,8 +1,8 @@
 'use strict';
 
 const Joi = require('joi');
-//const { create } = require('../../repositories/cars-repository');
-const carsRepository = require('../../repositories/cars-repository');
+const { create, findByBrandAndModel } = require('../../repositories/cars-repository');
+const createJsonError = require('../errors/create-json-errors');
 
 const schema = Joi.object().keys({
   brand: Joi.string().alphanum().min(3).max(20).required(),
@@ -10,24 +10,25 @@ const schema = Joi.object().keys({
   year: Joi.number().min(1980).max(new Date().getFullYear())
 });
 
-function createCar(req, res) {
+async function createCar(req, res) {
   try {
-    Joi.assert(req.body, schema);
+    await schema.validateAsync(req.body);
+    //Joi.assert(req.body, schema);
 
     const { brand, model, year } = req.body;
 
-    const car = { brand, model, year };
-
-    const addedCar = carsRepository.create(car);
-
-    res.status(201).send(addedCar);
-  } catch(err) {
-    if(err.name === 'ValidationError'){
-      err.status = 400;
+    const existCar = await findByBrandAndModel(brand, model);
+    if (existCar) {
+      const error = new Error('Ya existe ese modelo de coche en la web');
+      error.status = 409;
+      throw error;
     }
 
-    res.status(err.status || 500);
-    res.send({ error: err.message });
+    const id = await create(brand, model, year);
+
+    res.status(201).send({ id, brand, model, year });
+  } catch(err) {
+    createJsonError(err, res);
   }
 }
 
