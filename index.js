@@ -9,13 +9,14 @@ const app = express();
 app.use(express.json());
 
 const carsRouter = require('./app/routes/cars-routes');
+const usersRouter = require('./app/routes/users-routes');
 
 const port = process.env.SERVER_PORT || 3080;
 
-const accessLogStream = fs.createWriteStream(path.join(__dirname, './access.log'), { flags: 'a'});
+const accessLogStream = fs.createWriteStream(path.join(__dirname, './access.log'), { flags: 'a' });
 app.use(morgan('combined', { stream: accessLogStream }));
 
 app.use('/api/v1/cars/', carsRouter);
-//app.use('/api/v1/users/', usersRouter);
+app.use('/api/v1/users/', usersRouter);
 
 app.listen(port, () => console.log(`Listening ${port}...`));
