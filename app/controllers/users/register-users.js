@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const bcrypt = require('bcryptjs');
-const { createUsers, findUserByEmail } = require('../../repositories/users-repository');
+const { createUser, findUserByEmail } = require('../../repositories/users-repository');
 const createJsonError = require('../errors/create-json-errors');
 
 const schema = Joi.object().keys({
@@ -26,7 +26,9 @@ async function registerUsers(req, res) {
     }
     const passwordHash = await bcrypt.hash(password, 12);
 
-    res.status(201).send(`${passwordHash}`);
+    const id = await createUser(name, email, passwordHash, 'reader');
+
+    res.status(201).send({ id, name, email, role: 'reader' });
   } catch (err) {
     createJsonError(err, res);
   }

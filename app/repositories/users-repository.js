@@ -8,17 +8,24 @@ async function findAllUsers() {
 }
 
 async function findUserByEmail(email) {
-  //LLAMADA DB
-  return false;
+  const pool = await database.getPool();
+  const query = 'SELECT * FROM users WHERE email = ?';
+  const [users] = await pool.query(query, email);
+
+  return users[0];
 }
 
-async function createUsers() {
-  // LLAMAR BASE DE DATOS
-  return 'registerUsers';
+async function createUser(name, email, passwordHash, role) {
+  const pool = await database.getPool();
+  const insertQuery = 'INSERT INTO users (name, email, password, role) VALUES(?, ?, ?, ?)';
+  const [created] = await pool.query(insertQuery, [name, email, passwordHash, role]);
+
+  return created.insertId;
+  //return '12';
 }
 
 module.exports = {
   findAllUsers,
   findUserByEmail,
-  createUsers,
+  createUser,
 };

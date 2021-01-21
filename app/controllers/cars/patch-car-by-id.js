@@ -19,10 +19,10 @@ const schema = Joi.object().keys({
 async function patchCarById(req, res) {
   try {
     const { id } = req.params;
-
+    // 1. validar id
     await schemaId.validateAsync(id);
 
-    // Validamos que existe el id seleccionado
+    // 2. Validamos que existe el id seleccionado
     const car = await findById(parseInt(id));
     if( !car ) {
       const error = new Error('Id not available');
@@ -37,7 +37,7 @@ async function patchCarById(req, res) {
       ...car,
       ...req.body
     };
-    console.log(updatedCar);
+    
     const { brand, model } = updatedCar;
     // Validamos que no existe ese modelo de coche
     const existCar = await findByBrandAndModel(brand, model);

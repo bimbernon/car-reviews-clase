@@ -5,11 +5,7 @@ const database = require('../infrastructure/database');
 async function create(brand, model, year) {
   const pool = await database.getPool();
   const insertQuery = 'INSERT INTO cars (brand, model, year) VALUES (?, ?, ?)';
-  const [created] = await pool.query(insertQuery, [
-    brand,
-    model,
-    year
-  ]);
+  const [created] = await pool.query(insertQuery, [brand, model, year]);
 
   return created.insertId;
 }
@@ -56,12 +52,11 @@ async function updateById(id, updatedCar) {
   return true;
 }
 
-
 module.exports = {
   create,
   findAll,
   findByBrandAndModel,
   findById,
   removeById,
-  updateById
-}
+  updateById,
+};

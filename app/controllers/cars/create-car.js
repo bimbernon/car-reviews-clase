@@ -7,7 +7,7 @@ const createJsonError = require('../errors/create-json-errors');
 const schema = Joi.object().keys({
   brand: Joi.string().alphanum().min(3).max(20).required(),
   model: Joi.string().alphanum().min(2).max(20).required(),
-  year: Joi.number().min(1980).max(new Date().getFullYear())
+  year: Joi.number().min(1980).max(new Date().getFullYear()),
 });
 
 async function createCar(req, res) {
@@ -27,7 +27,7 @@ async function createCar(req, res) {
     const id = await create(brand, model, year);
 
     res.status(201).send({ id, brand, model, year });
-  } catch(err) {
+  } catch (err) {
     createJsonError(err, res);
   }
 }
